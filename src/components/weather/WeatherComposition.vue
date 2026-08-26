@@ -53,7 +53,7 @@ const selectCity = (city) => {
   selectedCityInfo.value = city
 }
 
-// 선택 토스트는 잠깐 떴다가 자동으로 사라진다
+// 선택 토스트는 잠깐 떴다가 자동으로 종료
 let toastTimer = null
 watch(selectedCityInfo, (newCity) => {
   if (!newCity) return
@@ -225,7 +225,7 @@ const refreshWeatherOnce = () => {
       </div>
     </div>
     <div class="outfit-hero outfit-hero--placeholder" v-else>
-      👆 도시 카드를 눌러보면 오늘의 코디를 추천해드려요
+      도시 카드를 누르면 오늘의 코디를 추천해드려요
     </div>
 
     <div class="weather-cards" v-if="filteredWeatherList.length > 0">
@@ -384,7 +384,6 @@ const refreshWeatherOnce = () => {
   flex-wrap: wrap;
   font-size: 0.9rem;
   margin-bottom: 20px;
-  opacity: 0.85;
 }
 
 .outfit-summary .umbrella {
@@ -433,7 +432,6 @@ const refreshWeatherOnce = () => {
   text-align: center;
   background: var(--color-background-soft);
   color: var(--color-text);
-  opacity: 0.7;
   border: 1px dashed var(--color-border);
   box-shadow: none;
 }
@@ -445,7 +443,6 @@ const refreshWeatherOnce = () => {
 
 .hero-city {
   font-size: 0.85rem;
-  opacity: 0.85;
   margin-bottom: 4px;
 }
 
@@ -456,7 +453,6 @@ const refreshWeatherOnce = () => {
 .hero-umbrella {
   margin-top: 6px;
   font-size: 0.9rem;
-  opacity: 0.9;
 }
 
 .weather-cards {

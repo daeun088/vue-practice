@@ -42,12 +42,12 @@ const selectCity = (city) => {
   selectedMessage.value = `${city.name}${getSubjectParticle(city.name)} 선택되었습니다.`
 }
 
-// [상세보기] 버튼 → click.stop + window.alert
+// [상세보기] 버튼 클릭 시 alert 창 오픈
 const showDetail = (cityName, status) => {
   window.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
 }
 
-// 별 아이콘 클릭으로 즐겨찾기 토글 (반응형 Set)
+// 별 아이콘 클릭으로 즐겨찾기 토글
 const favoriteCityIds = ref(new Set())
 const toggleFavorite = (city) => {
   const next = new Set(favoriteCityIds.value)
@@ -59,7 +59,7 @@ const toggleFavorite = (city) => {
   favoriteCityIds.value = next
 }
 
-// 우클릭(contextmenu) + .prevent 로 브라우저 기본 메뉴 대신 안내 표시
+// 우클릭(contextmenu) + .prevent 로 즐겨찾기 정보 출력
 const showContextInfo = (city) => {
   window.alert(
     `[우클릭 메뉴]\n${city.name}은(는) 즐겨찾기 ${
@@ -68,7 +68,7 @@ const showContextInfo = (city) => {
   )
 }
 
-// 온도 더블클릭 → °C/°F 전환 (도시별로 독립적으로 토글되도록 Set으로 관리)
+// 온도 더블클릭 시 °C/°F 전환
 const fahrenheitCityIds = ref(new Set())
 const toggleTempUnit = (city) => {
   const next = new Set(fahrenheitCityIds.value)
@@ -140,8 +140,14 @@ const refreshWeatherOnce = () => {
         </button>
         <div class="card-icon">{{ weatherIcons[city.status] ?? '🌈' }}</div>
         <h3 class="city-name">{{ city.name }}</h3>
-        <p class="temp" @click.stop @dblclick.stop="toggleTempUnit(city)" title="더블클릭: °C/°F 전환">
-          {{ displayTemp(city) }}<span class="deg">{{ fahrenheitCityIds.has(city.id) ? '°F' : '°C' }}</span>
+        <p
+          class="temp"
+          @click.stop
+          @dblclick.stop="toggleTempUnit(city)"
+          title="더블클릭: °C/°F 전환"
+        >
+          {{ displayTemp(city)
+          }}<span class="deg">{{ fahrenheitCityIds.has(city.id) ? '°F' : '°C' }}</span>
         </p>
         <p class="status-text">{{ city.status }}</p>
 

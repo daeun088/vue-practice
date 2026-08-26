@@ -1,11 +1,12 @@
 # Weather
 
-날씨 카드를 출력하는 과제. 두 페이지로 나눠서 진행한다.
+날씨 카드를 출력하는 과제. 세 페이지로 나눠서 진행한다.
 
 - `/weather` — [WeatherView.vue](../../../views/WeatherView.vue) → `WeatherMockup.vue` (Day1: v-for, v-if, 이벤트/수식어)
 - `/weather-composition` — [WeatherCompositionView.vue](../../../views/WeatherCompositionView.vue) → `WeatherComposition.vue` (Day2: computed, watch, watchEffect)
+- `/weather-dashboard` — [WeatherDashboardView.vue](../../../views/WeatherDashboardView.vue) → `WeatherParent.vue` (Day3: 컴포넌트 분리, props/emits)
 
-컴포넌트 분리(props/emits)는 아직 배우지 않은 뒷부분 커리큘럼이라, 카드 마크업은 두 파일에 각각 인라인으로 들어있다(의도적인 중복). `WeatherCard.vue`는 컴포넌트 분리를 연습해본 흔적으로 저장소에 남겨뒀지만 지금은 어느 페이지에서도 쓰지 않는다. 온도→코디 매핑([outfit.js](./outfit.js))처럼 컴포넌트가 아닌 순수 함수 모듈은 두 페이지가 그대로 같이 가져다 쓴다.
+Day1/Day2는 컴포넌트 분리를 아직 배우지 않은 시점에 만든 것이라 카드 마크업이 두 파일에 각각 인라인으로 들어있다(의도적인 중복). Day3에서 컴포넌트 분리를 배우면서, Day2(`WeatherComposition.vue`)와 기능은 동일하되 여러 컴포넌트로 쪼갠 버전을 새로 만들었다 — 아래 "컴포넌트 분리 (Day3)" 섹션 참고. 온도→코디 매핑([outfit.js](./outfit.js))처럼 컴포넌트가 아닌 순수 함수 모듈은 세 페이지가 그대로 같이 가져다 쓴다.
 
 ## 과제 요구사항 (Day1 — v-for/v-if/이벤트)
 
@@ -37,6 +38,18 @@
 - **`outfitSummary`** (computed) — `filteredWeatherList` 전체를 순회해서 카테고리별 개수 + 우산 필요한 도시 수를 집계. 지금까지의 computed가 전부 "단일 항목 파생"이었다면, 이건 "배열 → 집계값" 유형이라 다른 성격의 computed 활용 사례.
 
 watch/watchEffect 콜백의 `console.log`는 그대로 다 남아있지만, 화면에는 "watch 모니터링 박스" 같은 디버그용 UI 대신 **실제 서비스 화면처럼 보이는 요소**로 노출한다: 선택된 도시가 바뀌면 상단에 토스트(`statusMessage`, 2초 후 자동 사라짐)가 뜨고, 그 아래 "오늘의 코디 추천" 히어로 패널(`selectedOutfit`/`needsUmbrella` 기반)이 실시간으로 갱신된다. 즉 watch/computed는 여전히 그대로 동작하지만, 그 결과를 사용자에게 자연스러운 UI로 보여주는 방식으로 바꾼 것.
+
+## 컴포넌트 분리 (Day3)
+
+`WeatherComposition.vue`(Day2)와 기능은 동일하게, 화면을 여러 컴포넌트로 쪼갠 버전이 `WeatherParent.vue`다. 반응형 데이터는 전부 `WeatherParent`가 들고 있고, 자식들은 props로 받아 표시하고 emit으로 부모에게 이벤트를 올려보내는 "props down, events up" 구조로 짰다.
+
+- **`WeatherParent.vue`** — `weatherList`, `searchQuery`, `sortOrder`, `selectedCityInfo`, `statusMessage`, `favoriteCityIds`, `fahrenheitCityIds`, `isRefreshed`를 비롯해 모든 computed/watch/watchEffect를 그대로 소유. 자식 컴포넌트는 로컬 `ref`를 하나도 갖지 않는다(표시용 `computed`는 예외).
+- **`BaseDashboardCard.vue`** — 검색 영역과 카드 리스트 영역에 공통으로 쓰는 둥근 박스 디자인. `title` prop + 기본 `<slot />` 하나로, 내부에 뭐가 들어오는지는 모른다. `WeatherParent`가 `<SearchBar>`/`<SortControls>`, `<WeatherCard v-for>` 리스트를 각각 슬롯으로 주입한다.
+  - 슬롯으로 전달되는 `SearchBar`/`WeatherCard`는 화면상으론 `BaseDashboardCard` 안에 보이지만, 실제로는 `WeatherParent`의 스코프에서 컴파일·평가된다 — 그래서 `WeatherParent`가 이 자식들과 직접 데이터/이벤트를 주고받을 수 있다.
+- **`SearchBar.vue`** — props: `searchQuery`. emits: `update-query`(입력할 때마다), Enter/Esc 수식어는 컴포넌트 내부에서 처리(값은 이미 prop으로 받아 알고 있으므로 굳이 부모에 물어볼 필요 없음).
+- **`WeatherCard.vue`** — props: `city`, `isSelected`, `isFavorite`, `isFahrenheit`. emits: `select-card`, `click-detail`(필수 2종) + `toggle-favorite`, `toggle-temp-unit`, `context-menu`(기능 유지를 위해 추가). 컴포넌트 내부엔 `ref`가 하나도 없고, 표시용 값(`outfit`, `displayTemp`)만 props 기반 `computed`로 계산한다 — 즐겨찾기/화씨 여부 같은 "상태"는 여전히 `WeatherParent`가 `Set`으로 관리하고 prop으로 각 카드에 내려줄 뿐이다.
+- **(본인 추가) `SortControls.vue`** — props: `sortOrder`. emits: `update-sort`. 버튼 목록을 컴포넌트 내부 상수로 두고, 클릭 시 값만 올려보내는 단순한 "컨트롤드 인풋" 패턴.
+- **(본인 추가) `OutfitHeroPanel.vue`** — props: `city`, `outfit`, `needsUmbrella`. emit이 하나도 없는 순수 표시 전용(presentational) 컴포넌트 — 데이터가 없으면 안내 문구를, 있으면 코디 추천을 보여줄 뿐 어떤 이벤트도 발생시키지 않는다.
 
 ## 추가로 넣어본 이벤트/수식어 (Day1)
 
@@ -72,3 +85,5 @@ watch/watchEffect 콜백의 `console.log`는 그대로 다 남아있지만, 화�
 6. **Day1/Day2 페이지를 따로 만들었다가 하나로 병합** — 처음엔 `/weather`(Day1)와 `/weather-composition`(Day2)을 별도 페이지로 만들었는데, 과제가 누적 진행 방식이라 Day2 페이지가 Day1 내용을 전부 포함하고 있어야 한다는 걸 뒤늦게 확인. `WeatherMockup.vue`를 삭제하고 그 안의 Day1 로직(검색 echo, 상세보기 alert, 이벤트 수식어들)을 `WeatherComposition.vue`로 옮겨 `/weather` 한 페이지로 통합했다. 이 과정에서 Day1에 실수로 들어가 있던 "검색어로 카드 필터링" 기능도 발견 — 원래 Day1 스펙은 필터링을 요구하지 않았고, 그건 Day2의 `filteredWeatherList` computed가 담당하는 게 맞아서 정리했다.
 7. **"watch 모니터링 박스" UI를 실제 서비스 화면으로 교체** — 처음엔 watch/watchEffect 값을 눈으로 확인하려고 "🐕 watch (selectedCityInfo)" 같은 디버그용 모니터 패널을 화면에 그대로 노출했는데, 실제 사용자 화면이라기엔 어색했다. `console.log`는 그대로 두고, 화면에는 토스트 알림 + "오늘의 코디 추천" 히어로 패널처럼 자연스러운 UI 요소로 결과를 보여주는 방식으로 교체했다.
 8. **한 페이지 병합 + 컴포넌트 분리를 다시 두 페이지로 되돌림** — 위 6번에서 Day1/Day2를 한 페이지(`WeatherComposition.vue`)로 합치고 카드 UI도 `WeatherCard.vue` 컴포넌트로 분리했었는데, (a) 과제 자체는 원래 Day1/Day2가 구분되어 있어야 하고 (b) 컴포넌트(props/emits) 분리는 아직 배우지 않은 커리큘럼이라 지금 제출물에 쓰면 안 된다는 걸 확인. `WeatherMockup.vue`를 다시 만들고, 두 파일 모두 카드 마크업을 인라인으로 갖도록 되돌렸다. `WeatherCard.vue` 파일 자체는 지우지 않고 저장소에 남겨뒀다(연습해본 흔적, 나중에 컴포넌트 단원에서 다시 참고용으로 쓸 수 있음).
+9. **Day3에서 `WeatherCard.vue`를 새 스펙으로 다시 채움** — 8번에서 비워뒀던 `WeatherCard.vue`가 Day3 과제(컴포넌트 분리) 요구사항의 파일명과 정확히 겹쳐서, 그 자리를 새 prop/emit 계약(`city`/`isSelected`/`isFavorite`/`isFahrenheit`, `select-card`/`click-detail`/`toggle-favorite`/`toggle-temp-unit`/`context-menu`)으로 다시 채웠다. 옛날 버전과 이름은 같지만 emit 이름 등 계약이 달라서 완전히 새로 작성.
+10. **Composition 카드에서 온도별 배경색이 안 바뀌던 버그** — Day2 페이지를 컴포넌트에서 다시 인라인으로 되돌리는 과정에서 `is-hot` 클래스 바인딩과 `.weather-card.is-hot` CSS 규칙을 실수로 빠뜨려서, 25도 이상인 카드도 계속 파란 배경으로 나왔다. 클래스 바인딩과 CSS 규칙을 다시 추가해서 해결.

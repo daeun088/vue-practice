@@ -1,14 +1,15 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { getOutfitCategory } from './outfit'
 
 const props = defineProps({
   city: { type: Object, required: true },
   isSelected: { type: Boolean, default: false },
   isFavorite: { type: Boolean, default: false },
+  isFahrenheit: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'toggle-favorite', 'show-detail', 'context-menu'])
+defineEmits(['select-card', 'click-detail', 'toggle-favorite', 'toggle-temp-unit', 'context-menu'])
 
 const weatherIcons = {
   맑음: '☀️',
@@ -16,43 +17,41 @@ const weatherIcons = {
   구름: '☁️',
 }
 
-const isHot = computed(() => props.city.temp >= 25)
 const outfit = computed(() => getOutfitCategory(props.city.temp))
-
-// 더블클릭으로 단위 전환 (카드 클릭과 겹치지 않도록 함)
-const isFahrenheit = ref(false)
-const toggleTempUnit = () => {
-  isFahrenheit.value = !isFahrenheit.value
-}
 const displayTemp = computed(() =>
-  isFahrenheit.value ? Math.round((props.city.temp * 9) / 5 + 32) : props.city.temp,
+  props.isFahrenheit ? Math.round((props.city.temp * 9) / 5 + 32) : props.city.temp,
 )
 </script>
 
 <template>
   <div
     class="weather-card"
-    :class="{ 'is-hot': isHot, 'is-selected': isSelected }"
-    @click="emit('select', city)"
-    @contextmenu.prevent="emit('context-menu', city)"
+    :class="{ 'is-hot': city.temp >= 25, 'is-selected': isSelected }"
+    @click="$emit('select-card', city)"
+    @contextmenu.prevent="$emit('context-menu', city)"
   >
     <button
       class="favorite-star"
       :class="{ 'is-favorite': isFavorite }"
-      @click.stop="emit('toggle-favorite', city)"
+      @click.stop="$emit('toggle-favorite', city)"
     >
       {{ isFavorite ? '⭐' : '☆' }}
     </button>
     <div class="card-icon">{{ weatherIcons[city.status] ?? '🌈' }}</div>
     <h3 class="city-name">{{ city.name }}</h3>
-    <p class="temp" @click.stop @dblclick.stop="toggleTempUnit" title="더블클릭: °C/°F 전환">
+    <p
+      class="temp"
+      @click.stop
+      @dblclick.stop="$emit('toggle-temp-unit', city)"
+      title="더블클릭: °C/°F 전환"
+    >
       {{ displayTemp }}<span class="deg">{{ isFahrenheit ? '°F' : '°C' }}</span>
     </p>
     <p class="status-text">{{ city.status }}</p>
 
     <p class="badge">{{ outfit.emoji }} {{ outfit.label }}</p>
 
-    <button class="detail-btn" @click.stop="emit('show-detail', city)">상세보기</button>
+    <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
   </div>
 </template>
 

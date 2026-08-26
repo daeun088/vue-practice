@@ -4,6 +4,7 @@
   <nav style="padding: 0 20px">
     <RouterLink to="/weather">Weather Mockup</RouterLink>
     <RouterLink to="/weather-composition">Weather Composition</RouterLink>
+    <RouterLink to="/weather-dashboard">Weather Dashboard</RouterLink>
   </nav>
 
   <RouterView />

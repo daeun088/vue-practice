@@ -15,6 +15,21 @@ npm run dev
 
 `npm run build` 빌드, `npm run lint`로 ESLint/oxlint 검사.
 
+## 폴더 구조
+
+```
+src/
+├── components/
+│   ├── weather/      # Mockup/Composition/Dashboard
+│   ├── exercise/      # 본 화면 사용 컴포넌트 검색바, 카드, 도시 목록 등
+│   └── vuetify/      # Vuetify 상세 페이지 컴포넌트
+├── views/            # 라우트 매핑 페이지 (홈/상세/즐겨찾기/소개/기록/Day1~3/Vuetify)
+├── stores/           # Pinia — 단위 설정, 즐겨찾기
+├── services/         # Axios — OpenWeatherMap, 공공데이터포털 공휴일 API 호출
+├── router/           # 라우트 정의
+└── plugins/          # Vuetify 초기화
+```
+
 ---
 
 ## 1. Weather Mockup
@@ -27,7 +42,7 @@ npm run dev
 
 코드: `src/components/weather/WeatherComposition.vue` (`/weather-composition`)
 
-`searchQuery`, `selectedCityInfo`, `weatherList`를 반응형 상태로 두고, `computed`로 검색어에 맞는 도시만 걸러내는 `filteredWeatherList`를 구현했다. `watch(selectedCityInfo)`로 상태바 문구가 바뀔 때마다, `watchEffect`로 검색어가 바뀔 때마다 콘솔에 로그를 남긴다. 본인 추가 기능으로 온도 오름차순/내림차순 정렬(`sortOrder`, `sortedWeatherList`)과 온도→코디 매핑(`getOutfitCategory`)을 얹었다.
+`searchQuery`, `selectedCityInfo`, `weatherList`를 반응형 상태로 두고, `computed`로 검색어에 맞는 도시만 걸러내는 `filteredWeatherList`를 구현했다. `watch(selectedCityInfo)`로 상태바 문구가 바뀔 때마다, `watchEffect`로 검색어가 바뀔 때마다 콘솔에 로그를 남긴다. 또한, 추가 기능으로 온도 오름차순/내림차순 정렬과 온도를 기반으로 코디 매핑 기능을 구현했다.
 
 ## 3. Weather Component Vue Components
 
@@ -71,7 +86,7 @@ src/
     └── NotFoundView.vue        # 정의되지 않은 경로 접근 시 (Catch-all Route)
 ```
 
-모든 라우트를 `component: () => import(...)`로 지연 로딩했고, `WeatherHomeView.vue`는 상세보기 클릭 시 `window.alert` 대신 `router.push('/weather/' + id)`로 이동하도록 했다. `WeatherDetailView.vue`는 동적 경로 `cityId`를 기준으로 도시 정보를 조회하고, 본인 추가 페이지로 `WeatherFavoritesView.vue`(`/weather/favorites`)를 만들어 즐겨찾기 도시만 모아 보여준다.
+모든 라우트를 `component: () => import(...)`로 지연 로딩했고, `WeatherHomeView.vue`는 상세보기 클릭 시 `window.alert` 대신 `router.push('/weather/' + id)`로 이동하도록 했다. `WeatherDetailView.vue`는 동적 경로 `cityId`를 기준으로 도시 정보를 조회하고, 추가 페이지로 `WeatherFavoritesView.vue`(`/weather/favorites`)를 만들어 즐겨찾기 도시만 모아 보여준다.
 
 ### 트러블슈팅
 
@@ -79,9 +94,9 @@ src/
 
 ## 5. Weather Store Pinia
 
-▪ 날씨 단위를 세팅하는 stores/configStore.js 작성. `UnitToggler.vue`를 대시보드 상단/Navigation Bar 옆에 배치해 메인·상세 화면의 단위 설정에 적용하고, 본인만의 추가 Store를 만든다.
+▪ 날씨 단위를 세팅하는 stores/configStore.js 작성. `UnitToggler.vue`를 대시보드 상단/Navigation Bar 옆에 배치해 메인·상세 화면의 단위 설정에 적용하고, 추가 Store를 만든다.
 
-`configStore.js`는 `unit`(celsius/fahrenheit) state와 `unitSymbol`, `convertTemp()` getter, `setUnit()`/`toggleUnit()` action을 가지며 localStorage로 영속화된다. 본인 추가 Store로 `favoritesStore.js`를 만들어 즐겨찾기 상태(`favoriteCityIds`)를 관리한다.
+`configStore.js`는 `unit`(celsius/fahrenheit) state와 `unitSymbol`, `convertTemp()` getter, `setUnit()`/`toggleUnit()` action을 가지며 localStorage로 영속화된다. 추가 Store로 `favoritesStore.js`를 만들어 즐겨찾기 상태를 관리한다.
 
 ### 트러블슈팅
 

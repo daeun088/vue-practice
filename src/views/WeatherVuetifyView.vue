@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { cities } from '../components/exercise/cities'
 import { fetchCurrentWeatherList } from '../services/weatherApi'
 import { fetchHolidays } from '../services/holidayApi'
+import { OUTFIT_GUIDE } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import SearchBar from '../components/exercise/SearchBar.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
@@ -62,50 +63,84 @@ onMounted(async () => {
       <p class="subtitle">도시별 날씨에 맞는 코디를 추천해드려요</p>
     </header>
 
-    <BaseDashboardCard title="이번 달 공휴일">
-      <ul v-if="holidays.length > 0" class="holiday-list">
-        <li v-for="holiday in holidays" :key="holiday.date">
-          <span>{{ formatHolidayDate(holiday.date) }}</span>
-          <strong>{{ holiday.name }}</strong>
-        </li>
-      </ul>
-      <p v-else class="empty-msg">이번 달은 공휴일이 없습니다.</p>
-    </BaseDashboardCard>
+    <div class="layout-grid">
+      <div class="layout-left">
+        <BaseDashboardCard title="이번 달 공휴일">
+          <ul v-if="holidays.length > 0" class="holiday-list">
+            <li v-for="holiday in holidays" :key="holiday.date">
+              <span>{{ formatHolidayDate(holiday.date) }}</span>
+              <strong>{{ holiday.name }}</strong>
+            </li>
+          </ul>
+          <p v-else class="empty-msg">이번 달은 공휴일이 없습니다.</p>
+        </BaseDashboardCard>
 
-    <BaseDashboardCard title="도시 검색">
-      <SearchBar :search-query="searchQuery" @update-query="searchQuery = $event" />
-    </BaseDashboardCard>
-
-    <BaseDashboardCard title="지역별 날씨 현황">
-      <div class="unit-row">
-        <v-btn-toggle v-model="configStore.unit" mandatory density="comfortable" color="primary">
-          <v-btn value="celsius">°C</v-btn>
-          <v-btn value="fahrenheit">°F</v-btn>
-        </v-btn-toggle>
+        <BaseDashboardCard title="코디 가이드">
+          <ul class="guide-list">
+            <li v-for="item in OUTFIT_GUIDE" :key="item.key">
+              <span class="guide-emoji">{{ item.emoji }}</span>
+              <span class="guide-label">{{ item.label }}</span>
+              <span class="guide-range">{{ item.range }}</span>
+            </li>
+          </ul>
+        </BaseDashboardCard>
       </div>
 
-      <p v-if="isLoading" class="empty-msg">날씨 정보를 불러오는 중입니다...</p>
-      <p v-else-if="loadError" class="empty-msg">{{ loadError }}</p>
-      <div v-else-if="filteredWeatherList.length > 0" class="weather-cards">
-        <WeatherCard
-          v-for="city in filteredWeatherList"
-          :key="city.id"
-          :city="city"
-          :is-favorite="favoritesStore.isFavorite(city.id)"
-          @click-detail="goToDetail"
-          @toggle-favorite="toggleFavorite"
-        />
+      <div class="layout-right">
+        <BaseDashboardCard title="도시 검색">
+          <SearchBar :search-query="searchQuery" @update-query="searchQuery = $event" />
+        </BaseDashboardCard>
+
+        <BaseDashboardCard title="지역별 날씨 현황">
+          <div class="unit-row">
+            <v-btn-toggle v-model="configStore.unit" mandatory density="comfortable" color="primary">
+              <v-btn value="celsius">°C</v-btn>
+              <v-btn value="fahrenheit">°F</v-btn>
+            </v-btn-toggle>
+          </div>
+
+          <p v-if="isLoading" class="empty-msg">날씨 정보를 불러오는 중입니다...</p>
+          <p v-else-if="loadError" class="empty-msg">{{ loadError }}</p>
+          <div v-else-if="filteredWeatherList.length > 0" class="weather-cards">
+            <WeatherCard
+              v-for="city in filteredWeatherList"
+              :key="city.id"
+              :city="city"
+              :is-favorite="favoritesStore.isFavorite(city.id)"
+              @click-detail="goToDetail"
+              @toggle-favorite="toggleFavorite"
+            />
+          </div>
+          <p class="empty-msg" v-else>'{{ searchQuery }}'와 일치하는 도시가 없습니다 🥲</p>
+        </BaseDashboardCard>
       </div>
-      <p class="empty-msg" v-else>'{{ searchQuery }}'와 일치하는 도시가 없습니다 🥲</p>
-    </BaseDashboardCard>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .weather-page {
-  max-width: 900px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 24px;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.layout-left,
+.layout-right {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .weather-header {
@@ -162,5 +197,37 @@ onMounted(async () => {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 16px;
+}
+
+.guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guide-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.guide-emoji {
+  font-size: 1.3rem;
+}
+
+.guide-label {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.guide-range {
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 </style>

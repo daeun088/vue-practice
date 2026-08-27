@@ -17,19 +17,19 @@ npm run dev
 
 ---
 
-## 과제 1 - Weather Mockup
+## 1. Weather Mockup
 
 코드: `src/components/weather/WeatherMockup.vue` (`/weather`)
 
 `weatherList` 배열을 `v-for`로 순회해 카드를 출력하고(`:key="id"`), 기온 25도를 기준으로 `v-if`/`v-else`로 "🔥 더움"/"❄️ 선선함" 배지를 붙였다. 도시 검색 input은 `v-model` 대신 `:value`+`@input`으로 직접 양방향 바인딩을 구현했다. 카드 클릭 시 상태바에 문구를 표시하고, `[상세보기]` 버튼은 `@click.stop`으로 버블링을 막은 뒤 `window.alert`로 날씨 정보를 띄운다.
 
-## 과제 2 - Weather Composition
+## 2. Weather Composition
 
 코드: `src/components/weather/WeatherComposition.vue` (`/weather-composition`)
 
 `searchQuery`, `selectedCityInfo`, `weatherList`를 반응형 상태로 두고, `computed`로 검색어에 맞는 도시만 걸러내는 `filteredWeatherList`를 구현했다. `watch(selectedCityInfo)`로 상태바 문구가 바뀔 때마다, `watchEffect`로 검색어가 바뀔 때마다 콘솔에 로그를 남긴다. 본인 추가 기능으로 온도 오름차순/내림차순 정렬(`sortOrder`, `sortedWeatherList`)과 온도→코디 매핑(`getOutfitCategory`)을 얹었다.
 
-## 과제 3 - Weather Component Vue Components
+## 3. Weather Component Vue Components
 
 코드: `src/components/weather/` (`/weather-dashboard`)
 
@@ -47,7 +47,7 @@ npm run dev
 - 조사(이/가) 자동 선택, `click`/`dblclick` 이벤트 충돌 을 고려하였다.
 - watch/watchEffect 결과를 디버그용 모니터 박스 대신 토스트 + "오늘의 코디 추천" 히어로 패널로 노출해 실제 서비스 화면처럼 보이도록 구현했다.
 
-## 과제 4 - Weather Router
+## 4. Weather Router
 
 코드: `src/router/index.js`, `src/views/`, `src/components/exercise/` (`/`)
 
@@ -77,7 +77,7 @@ src/
 
 - Lazy Loading에서 `component: () => import(...)`처럼 화살표 함수로 감싸지 않으면, `import()`가 라우터 세팅 시점에 즉시 실행되어 로딩이 된다는 것을 확인하였다.
 
-## 과제 5 - Weather Store Pinia
+## 5. Weather Store Pinia
 
 ▪ 날씨 단위를 세팅하는 stores/configStore.js 작성. `UnitToggler.vue`를 대시보드 상단/Navigation Bar 옆에 배치해 메인·상세 화면의 단위 설정에 적용하고, 본인만의 추가 Store를 만든다.
 
@@ -88,7 +88,7 @@ src/
 - 온도 판정 로직은 항상 원본 섭씨값 기준으로 두고, 화씨 변환값은 화면 표시에만 쓰도록 분리하였다.
 - `WeatherHomeView.vue`, `WeatherFavoritesView.vue`에 중복돼있던 즐겨찾기 localStorage 로직을 `favoritesStore`로 통합하였다.
 
-## 과제 6 - Weather Axios Axios
+## 6. Weather Axios Axios
 
 ▪ Axios 활용. OpenWeatherMap API로 실제 날씨 데이터를 가져와 적용하고, 추가 OWM API와 기타 외부 API로 기능을 확장한다.
 
@@ -100,7 +100,7 @@ src/
 - 공공데이터포털(공휴일 API) 서비스키가 URL 인코딩된 상태로 발급이 되어 axios `params`에 넣을 경우, 이중 인코딩되어 인증이 깨지는 문제가 발생했다. 이에 따라 쿼리스트링을 직접 조립하는 방향으로 수정하였다.
 - 공공데이터포털 데이터의 경우 응답이 1건일 때 `items.item`이 배열이 아니라 객체로 오는 것을 확인하여 형태를 정규화했다.
 
-## 과제 7 - Weather UI Library
+## 7. Weather UI Library
 
 ▪ 외부 UI Library를 선정하고 3일차 과제에 외부 UI Library를 자유롭게 적용. 실제 날씨 데이터 적용, 추가 OWM API, 기타 외부 API로 기능을 확장한다.
 
@@ -111,7 +111,7 @@ src/
 - vuetify를 사용하며 `v-app`+`v-container`+Material 색상 카드로 페이지 전체를 새로 구성하였다. 하지만 기존 화면과 톤이 안 맞아서 카드는 기존 `WeatherCard.vue`를 재사용하고 Vuetify는 `v-btn-toggle`/`v-dialog`/`v-card` 등에 적용하는 방향으로 다시 정리했다.
 - Vuetify 컴포넌트가 `#prepend`/`#append` 같은 이름 있는 슬롯을 여러 개 쓰는 방식이 기존에 구현한 기본 슬롯이 하나인 `BaseDashboardCard`와 달라서, 슬롯/prop을 미리 파악해야 더욱 효율적으로 구현할 수 있다는 것을 체감했다.
 
-## 과제 8 - Weather Deployment
+## 8. Weather Deployment
 
 ▪ Source Code 품질관리 — ESLint로 에러를 없애고, API 키를 환경 변수로 분리해 Git에 올라가지 않게 한다. Build & Deployment — 프로젝트를 빌드하고, 빌드된 정적 파일을 본인의 서버에 호스팅해서 확인한다.
 

@@ -37,7 +37,7 @@ const goHome = () => {
 }
 
 .about-page p {
-  opacity: 0.85;
+  opacity: 0.92;
   line-height: 1.6;
   margin-bottom: 12px;
 }
@@ -53,6 +53,6 @@ const goHome = () => {
 }
 
 .home-btn:hover {
-  border-color: #42b883;
+  border-color: #ff6a3d;
 }
 </style>

@@ -42,7 +42,7 @@ const configStore = useConfigStore()
   padding: 4px 12px;
   font-size: 0.85rem;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.78;
   transition:
     background 0.15s ease,
     opacity 0.15s ease;
@@ -53,7 +53,7 @@ const configStore = useConfigStore()
 }
 
 .unit-btn.active {
-  background: #42b883;
+  background: linear-gradient(120deg, #ff8a5c, #ff5e8e);
   color: #fff;
   opacity: 1;
 }

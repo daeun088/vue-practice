@@ -121,12 +121,12 @@ onMounted(async () => {
 .lib-badge {
   font-size: 0.9rem;
   vertical-align: middle;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .subtitle {
   color: var(--color-text);
-  opacity: 0.6;
+  opacity: 0.78;
   font-size: 0.9rem;
 }
 

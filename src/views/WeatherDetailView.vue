@@ -136,7 +136,7 @@ onMounted(async () => {
 }
 
 .status {
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .detail-list {
@@ -209,6 +209,6 @@ onMounted(async () => {
 }
 
 .back-btn:hover {
-  border-color: #42b883;
+  border-color: #ff6a3d;
 }
 </style>

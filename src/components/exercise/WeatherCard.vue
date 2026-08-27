@@ -85,7 +85,7 @@ const accessories = computed(() => getAccessories(props.city))
   line-height: 1;
   padding: 4px;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .favorite-star:hover {
@@ -117,11 +117,11 @@ const accessories = computed(() => getAccessories(props.city))
 .deg {
   font-size: 1rem;
   font-weight: 400;
-  opacity: 0.85;
+  opacity: 0.92;
 }
 
 .status-text {
-  opacity: 0.9;
+  opacity: 0.95;
   margin-bottom: 8px;
 }
 

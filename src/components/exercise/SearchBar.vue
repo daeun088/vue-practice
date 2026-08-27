@@ -55,7 +55,7 @@ const handleClear = () => {
 .search-echo {
   text-align: center;
   font-size: 0.85rem;
-  opacity: 0.75;
+  opacity: 0.85;
   margin-top: 10px;
 }
 
@@ -64,7 +64,7 @@ const handleClear = () => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #42b883;
+  background: #ff6a3d;
   margin-right: 6px;
 }
 </style>

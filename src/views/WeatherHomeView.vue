@@ -145,7 +145,7 @@ onMounted(async () => {
 
 .subtitle {
   color: var(--color-text);
-  opacity: 0.6;
+  opacity: 0.78;
   font-size: 0.9rem;
 }
 
@@ -212,6 +212,6 @@ onMounted(async () => {
 
 .guide-range {
   font-size: 0.8rem;
-  opacity: 0.6;
+  opacity: 0.78;
 }
 </style>

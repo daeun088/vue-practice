@@ -38,7 +38,7 @@ const goHome = () => {
 }
 
 .desc {
-  opacity: 0.7;
+  opacity: 0.85;
   margin-bottom: 20px;
 }
 
@@ -52,6 +52,6 @@ const goHome = () => {
 }
 
 .home-btn:hover {
-  border-color: #42b883;
+  border-color: #ff6a3d;
 }
 </style>

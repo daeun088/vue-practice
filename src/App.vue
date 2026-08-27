@@ -68,7 +68,7 @@ nav a {
   border-radius: 999px;
   color: var(--color-text);
   text-decoration: none;
-  opacity: 0.7;
+  opacity: 0.85;
   transition:
     background 0.15s ease,
     opacity 0.15s ease;

@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import WeatherMockup from '../components/weather/WeatherMockup.vue'
 import WeatherComposition from '../components/weather/WeatherComposition.vue'
 import WeatherParent from '../components/weather/WeatherParent.vue'
@@ -12,8 +13,20 @@ const records = [
   { key: 'vuetify', label: 'Vuetify', title: 'Weather Vuetify', component: WeatherVuetifyView },
 ]
 
-const selectedKey = ref(records[0].key)
+const route = useRoute()
+const router = useRouter()
+
+// 선택된 탭을 쿼리 파라미터로 관리 -> /weather-vuetify/:cityId 상세로 갔다가
+// 뒤로가기로 돌아와도(컴포넌트가 다시 마운트돼도) 선택 상태가 유지됨
+const selectedKey = computed(() => {
+  const tab = route.query.tab
+  return records.some((record) => record.key === tab) ? tab : records[0].key
+})
 const selectedRecord = computed(() => records.find((record) => record.key === selectedKey.value))
+
+const selectTab = (key) => {
+  router.replace({ query: { ...route.query, tab: key } })
+}
 </script>
 
 <template>
@@ -31,7 +44,7 @@ const selectedRecord = computed(() => records.find((record) => record.key === se
           type="button"
           class="menu-item"
           :class="{ active: record.key === selectedKey }"
-          @click="selectedKey = record.key"
+          @click="selectTab(record.key)"
         >
           {{ record.label }}
         </button>

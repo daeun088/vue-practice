@@ -1,3 +1,37 @@
+# 오늘뭐입지
+
+도시별 날씨를 보고 오늘의 코디를 추천받는 Vue 3 연습 프로젝트. Day1(v-for/v-if)부터 배포까지 한 저장소 안에서 단계별로 쌓아올렸다.
+
+- 배포: https://vue-practice-opal.vercel.app/
+- 스택: Vue 3 (`<script setup>`), Vue Router, Pinia, Axios, Vuetify, Vite
+
+## 실행 방법
+
+```bash
+npm install
+cp .env.example .env   # VITE_OPENWEATHER_API_KEY, VITE_HOLIDAY_API_KEY 채워넣기
+npm run dev
+```
+
+`npm run build`로 빌드, `npm run lint`로 ESLint/oxlint 검사.
+
+## 문서 구조
+
+과제별로 코드가 있는 폴더 옆에 상세 README를 뒀다. 이 파일은 전체를 훑어보는 허브고, 각 항목의 트러블슈팅/설계 노트는 링크된 파일에 더 자세히 있다.
+
+```
+README.md                         ← 지금 이 파일 (허브)
+src/
+├── components/
+│   ├── weather/README.md         ← Day1~3
+│   └── vuetify/README.md         ← UI Library
+├── stores/README.md              ← Pinia
+├── services/README.md            ← Axios
+└── views/README.md               ← Router
+```
+
+---
+
 ## 과제 1 - Weather Mockup
 
 코드: `src/components/weather/WeatherMockup.vue` (`/weather`)
@@ -102,6 +136,13 @@
 6. 본인의 Mockup 부분에서 추가로 Component하거나 위의 Component를 더 분리하여 추가
    Component를 만든다.
 
+### 중점적으로 생각한 것 / 트러블슈팅 (자세히: [weather/README.md](src/components/weather/README.md))
+
+- Day1/Day2는 컴포넌트 분리를 배우기 전이라 카드 마크업을 각 파일에 의도적으로 인라인 중복시킴
+- 조사(이/가) 자동 선택, `click`/`dblclick` 이벤트 충돌 등 디테일한 UX 이슈를 다잡는 데 신경 씀
+- watch/watchEffect 결과를 디버그용 모니터 박스 대신 토스트 + "오늘의 코디 추천" 히어로 패널로 노출해 실제 서비스 화면처럼 보이게 함
+- Day1/Day2를 한 페이지로 합쳤다가, 과제가 누적식이라는 걸 뒤늦게 확인하고 다시 분리하는 등 스펙 해석 실수를 여러 번 바로잡음
+
 ## 과제 4 - Weather Router
 
 코드: `src/router/index.js`, `src/views/`, `src/components/exercise/` (`/`)
@@ -144,6 +185,11 @@ src/
 
 - `WeatherFavoritesView.vue` (`/weather/favorites`): localStorage에 저장된 즐겨찾기 도시만 모아 보여주는 페이지
 
+### 중점적으로 생각한 것 / 트러블슈팅 (자세히: [views/README.md](src/views/README.md))
+
+- Lazy Loading에서 `component: () => import(...)`처럼 화살표 함수로 감싸지 않으면, `import()`가 라우터 세팅 시점에 즉시 실행돼버려서 사실상 즉시 로딩이 되어버리는 함정이 있음
+- Vue Router 4부터 catch-all 문법이 `path: '*'` → `path: '/:pathMatch(.*)*'`로 바뀐 것, 그리고 정적/동적 라우트 선언 순서를 방어적으로 정리한 이유
+
 ## 과제 5 - Weather Store Pinia
 
 ▪ 날씨 단위를 세팅하는 stores/configStore.js 작성
@@ -157,6 +203,11 @@ src/
 4. 본인만의 추가 Store를 작성하고 활용하거나, configStore에서 state, getter, action을 추가
    한다
 
+### 중점적으로 생각한 것 / 트러블슈팅 (자세히: [stores/README.md](src/stores/README.md))
+
+- 온도 판정 로직(카드 배경색 `is-hot`, 코디 추천)은 항상 원본 섭씨값 기준으로 두고, 화씨 변환값은 화면 표시에만 쓰도록 분리 — 안 그러면 화씨로 전환 시 25도 이상 판정 같은 임계값 로직이 다 깨짐
+- `WeatherHomeView.vue`/`WeatherFavoritesView.vue`에 거의 똑같이 중복돼있던 즐겨찾기 localStorage 로직을 `favoritesStore`(본인 추가 Store)로 통합
+
 ## 과제 6 - Weather Axios Axios
 
 ▪ Axios 활용 준비
@@ -167,3 +218,66 @@ src/
 3. OpenWeatherMap API를 통해 실제 날씨 데이터를 가져와 적용한다.
 4. OpenWeatherMap에서 제공되는 API를 추가하여 Application 기능을 확장한다.
 5. 기타 외부 API를 추가하여 Application 기능을 확장한다.
+
+### 중점적으로 생각한 것 / 트러블슈팅 (자세히: [services/README.md](src/services/README.md))
+
+- OpenWeatherMap 키가 발급 직후라 401이 났던 걸, `curl`로 직접 호출해봐서 코드 문제가 아니라 키 활성화 대기 문제라는 걸 먼저 확인하고 넘어감
+- 공공데이터포털(공휴일 API) 서비스키가 이미 URL 인코딩된 상태로 발급돼서, axios `params`에 그냥 넣으면 이중 인코딩되어 인증이 깨지는 문제를 쿼리스트링 직접 조립으로 우회
+- 응답이 1건일 때 `items.item`이 배열이 아니라 객체로 오는 공공데이터포털 특유의 형태를 정규화
+
+## 과제 7 - Weather UI Library
+
+▪ 외부 UI Library를 선정하고 3일차 과제에 외부 UI Library를 자유롭게 적용해 본다.
+
+1. OpenWeatherMap API를 통해 실제 날씨 데이터를 가져와 적용한다.
+2. OpenWeatherMap에서 제공되는 API를 추가하여 Application 기능을 확장한다.
+3. 기타 외부 API를 추가하여 Application 기능을 확장한다.
+
+### 중점적으로 생각한 것 / 트러블슈팅 (자세히: [components/vuetify/README.md](src/components/vuetify/README.md))
+
+- 처음엔 `v-app`+`v-container`+Material 색상 카드로 페이지 전체를 새로 만들었는데, 기존 화면과 톤이 안 맞아서 카드는 기존 `WeatherCard.vue`를 재사용하고 Vuetify는 `v-btn-toggle`/`v-dialog`/`v-card` 등 꼭 필요한 곳에만 최소로 적용하는 쪽으로 다시 정리
+- Vuetify 컴포넌트가 `#prepend`/`#append` 같은 이름 있는 슬롯을 여러 개 쓰는 방식이 직접 만든 `BaseDashboardCard`(기본 슬롯 하나)와 달라서, 슬롯/prop을 미리 파악해야 하는 학습 비용이 있다는 걸 체감
+
+## 과제 8 - Weather Deployment
+
+▪ Source Code 품질관리
+
+1. ESLint로 점검하여 제출 과제의 Error를 없도록 한다.
+2. API 키는 환경 변수로 조정하고 Git에 업로드 되지 않도록 한다.
+   ▪ Build & Deployment
+3. Project를 Build 한다.
+4. Build 된 정적파일들을 본인의 서버에 Hosting 한 후 확인한다.
+
+### 중점적으로 생각한 것 / 트러블슈팅
+
+- ESLint/oxlint 에러 0개, `npm run build` 성공까지 매번 다시 확인하고 커밋하는 걸 습관화
+- `.env`는 처음부터 `.gitignore`에 추가해두고, 커밋 히스토리 전체(`git log --all -p`)를 검색해서 API 키 값이 한 번도 올라간 적 없는지 직접 검증
+- Vercel은 GitHub 연동 배포라 CLI 로그인을 대신 못 해줘서, 빌드 확인 + `.env.example` 정리 + 안내까지만 처리하고 실제 계정 연결/환경변수 등록은 사용자가 진행
+- Vite는 `import.meta.env` 값을 빌드 시점에 번들에 박아 넣기 때문에, Vercel 프로젝트 설정에 `VITE_OPENWEATHER_API_KEY`/`VITE_HOLIDAY_API_KEY`를 등록 안 하면 로컬에선 되던 API 호출이 배포본에서만 401로 깨짐
+- vue-router `createWebHistory`(SPA) + 정적 호스팅 조합이라, `/weather/seoul`처럼 깊은 경로를 새로고침하면 404가 나는 문제를 `vercel.json`의 rewrite 규칙으로 미리 방지
+
+---
+
+## 포트폴리오 다듬기
+
+과제 8개를 다 끝낸 뒤, 배포한 걸 보니 허전해서 자유롭게 손본 것들. 특정 과제 번호에 안 묶이는 작업이라 여기 별도 섹션으로 정리.
+
+코드: [`App.vue`](src/App.vue), [`WeatherArchiveView.vue`](src/views/WeatherArchiveView.vue), [`WeatherHomeView.vue`](src/views/WeatherHomeView.vue), [`WeatherVuetifyView.vue`](src/views/WeatherVuetifyView.vue), [`cities.js`](src/components/exercise/cities.js), [`weatherData.js`](src/components/exercise/weatherData.js)
+
+### 한 것
+
+- 도시 4개 → 11개 확장 (`cities.js`에 위경도만 추가하면 되는 구조라 간단)
+- 온도만 보던 코디 추천에 비/바람 반영 — `getAccessories()`로 "☂️ 우산 필수" / "🧣 바람막이 추천" 배지 추가, 홈에 상시 "코디 가이드" 섹션
+- 헤더 리브랜딩 — Vue 기본 초록(#42b883) 걷어내고 로고 이미지 + 그라데이션 워드마크로 교체, nav를 홈/즐겨찾기/소개/기록 4개로 정리
+- 홈/Vuetify 페이지를 좌(공휴일+코디가이드) : 우(검색+카드) = 2:3 레이아웃으로 변경
+- `/archive`(기록) 페이지 — Day1~3 + Vuetify를 한 페이지에서 왼쪽 메뉴로 전환
+- 즐겨찾기 페이지에 "즐겨찾기 요약"(코디별 개수, 우산 필요 개수) 카드 추가
+
+### 트러블슈팅
+
+- **"기록" 페이지 요구사항을 세 번 고쳐 이해함** — 처음엔 카드 클릭 → 라우팅으로 만들었다가, "라우팅 말고 메뉴바로"라는 말에 우측 앵커 스크롤 메뉴로 바꿨다가, 최종적으로는 "카드 자체를 없애고 좌측 메뉴 클릭 시 그 컴포넌트가 그 자리에서 뜨는" 구조라는 걸 확인. `<component :is="selectedRecord.component">`로 `WeatherMockup`/`WeatherComposition`/`WeatherParent`/`WeatherVuetifyView`를 직접 갈아끼우는 방식으로 구현 — URL은 계속 `/archive`에 고정.
+- **임베드된 Vuetify 상세 페이지의 "뒤로가기"가 기록 페이지를 탈출함** — `WeatherVuetifyDetailView.vue`가 원래 독립 페이지(`/weather-vuetify`)용으로 만들어져서 "뒤로가기"가 `router.push('/weather-vuetify')`로 하드코딩돼있었음. `/archive`에서 이 컴포넌트를 그대로 재사용하다 보니, 상세 페이지 들어갔다 나올 때 항상 독립 페이지로 튀어버림. `router.push(고정 경로)` 대신 `router.back()`(브라우저 히스토리)으로 바꿔서, 어디서 들어왔든 원래 있던 곳으로 돌아가도록 수정.
+- **뒤로가기는 고쳤는데 이번엔 메뉴 선택 상태가 초기화됨** — `router.back()`으로 `/archive`에 돌아오면 `WeatherArchiveView`가 다시 마운트되면서 `selectedKey`(로컬 `ref`)가 Day1로 리셋됨. 선택 상태를 컴포넌트 로컬이 아니라 **쿼리 파라미터**(`/archive?tab=vuetify`)로 옮겨서 해결 — 브라우저 히스토리 자체에 상태가 실려있어서 뒤로가기해도 그대로 복원됨.
+- **로고 이미지가 1.3MB** — 32px로 보여줄 로고인데 원본이 1536×1024 PNG라 그대로 쓰기엔 낭비. ImageMagick이 안 깔려있어서 PowerShell `System.Drawing`으로 256px 폭으로 리사이즈(1.3MB → 40KB). 알파 채널(투명 배경) 유지되는지 픽셀 직접 샘플링해서 확인 후 진행.
+- **"로고 바꾸고 싶다"가 헤더 로고가 아니라 파비콘이었음** — 헤더의 브랜드 마크를 먼저 바꿨는데, 실제로 원한 건 브라우저 탭 아이콘. `public/favicon.ico`(Vue 기본 파비콘)를 지우고 `public/favicon.png`로 교체, `index.html`의 `<link rel="icon">`도 갱신.
+- **우산 배지 때문에 카드 높이가 들쭉날쭉해짐** — 배지가 1개인 카드와 2개인 카드가 섞여서 그리드 안에서 카드 높이가 안 맞았음. 배지들을 `flex-wrap` 한 줄로 묶고, `.weather-card`를 flex column + 버튼에 `margin-top: auto`를 줘서 배지 개수와 무관하게 버튼이 항상 카드 하단에 정렬되도록 수정.

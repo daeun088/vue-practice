@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { cities } from '../components/exercise/cities'
 import { fetchCurrentWeatherList } from '../services/weatherApi'
+import { getOutfitCategory, getAccessories, OUTFIT_GUIDE } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
 import { useFavoritesStore } from '../stores/favoritesStore'
@@ -17,6 +18,20 @@ const loadError = ref('')
 const favoriteCities = computed(() =>
   weatherList.value.filter((city) => favoritesStore.isFavorite(city.id)),
 )
+
+const outfitSummary = computed(() => {
+  const counts = Object.fromEntries(OUTFIT_GUIDE.map((item) => [item.key, 0]))
+  let umbrellaCount = 0
+
+  favoriteCities.value.forEach((city) => {
+    counts[getOutfitCategory(city.temp).key]++
+    if (getAccessories(city).some((accessory) => accessory.label === '우산 필수')) {
+      umbrellaCount++
+    }
+  })
+
+  return { counts, umbrellaCount }
+})
 
 const toggleFavorite = (city) => {
   favoritesStore.toggleFavorite(city.id)
@@ -47,6 +62,15 @@ onMounted(async () => {
       <h2>⭐ 즐겨찾는 도시</h2>
       <p class="subtitle">홈에서 즐겨찾기한 도시를 이곳에서 모아볼 수 있어요</p>
     </header>
+
+    <BaseDashboardCard v-if="favoriteCities.length > 0" title="즐겨찾기 요약">
+      <div class="summary-row">
+        <span v-for="item in OUTFIT_GUIDE" :key="item.key" class="summary-item">
+          {{ item.emoji }} {{ outfitSummary.counts[item.key] }}곳
+        </span>
+        <span class="summary-item">☂️ 우산 필요 {{ outfitSummary.umbrellaCount }}곳</span>
+      </div>
+    </BaseDashboardCard>
 
     <BaseDashboardCard title="즐겨찾기 목록">
       <p v-if="isLoading" class="empty-msg">날씨 정보를 불러오는 중입니다...</p>
@@ -100,5 +124,19 @@ onMounted(async () => {
 .empty-msg {
   text-align: center;
   padding: 24px 0;
+}
+
+.summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.summary-item {
+  font-size: 0.85rem;
+  background: var(--color-background-mute);
+  border-radius: 999px;
+  padding: 6px 14px;
 }
 </style>

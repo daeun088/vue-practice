@@ -37,10 +37,12 @@ const accessories = computed(() => getAccessories(props.city))
     <p class="temp">{{ displayTemp }}<span class="deg">{{ configStore.unitSymbol }}</span></p>
     <p class="status-text">{{ city.status }}</p>
 
-    <p class="badge">{{ outfit.emoji }} {{ outfit.label }}</p>
-    <p v-for="accessory in accessories" :key="accessory.label" class="badge badge-accessory">
-      {{ accessory.emoji }} {{ accessory.label }}
-    </p>
+    <div class="badge-row">
+      <span class="badge">{{ outfit.emoji }} {{ outfit.label }}</span>
+      <span v-for="accessory in accessories" :key="accessory.label" class="badge badge-accessory">
+        {{ accessory.emoji }} {{ accessory.label }}
+      </span>
+    </div>
 
     <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
   </div>
@@ -49,6 +51,9 @@ const accessories = computed(() => getAccessories(props.city))
 <style scoped>
 .weather-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 20px 16px;
   border-radius: 16px;
   text-align: center;
@@ -125,22 +130,26 @@ const accessories = computed(() => getAccessories(props.city))
   margin-bottom: 8px;
 }
 
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
 .badge {
   display: inline-block;
   font-size: 0.75rem;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   padding: 4px 10px;
-  margin-bottom: 6px;
-}
-
-.badge:last-of-type {
-  margin-bottom: 12px;
 }
 
 .detail-btn {
   display: block;
   width: 100%;
+  margin-top: auto;
   border: none;
   border-radius: 8px;
   padding: 8px 0;

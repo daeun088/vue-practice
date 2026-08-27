@@ -11,6 +11,7 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
       <RouterLink to="/weather-mockup">Weather Mockup</RouterLink>
       <RouterLink to="/weather-composition">Weather Composition</RouterLink>
       <RouterLink to="/weather-dashboard">Weather Dashboard</RouterLink>
+      <RouterLink to="/weather-vuetify">Weather Vuetify</RouterLink>
     </nav>
     <UnitToggler />
   </div>

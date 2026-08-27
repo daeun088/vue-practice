@@ -39,6 +39,16 @@ const router = createRouter({
       component: () => import('../views/WeatherDashboardView.vue'),
     },
     {
+      path: '/weather-vuetify',
+      name: 'weather-vuetify',
+      component: () => import('../views/WeatherVuetifyView.vue'),
+    },
+    {
+      path: '/weather-vuetify/:cityId',
+      name: 'weather-vuetify-detail',
+      component: () => import('../views/WeatherVuetifyDetailView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('../views/NotFoundView.vue'),

@@ -1,28 +1,18 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { mockCities } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import SearchBar from '../components/exercise/SearchBar.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
-
-const FAVORITES_STORAGE_KEY = 'weather-favorite-city-ids'
+import { useFavoritesStore } from '../stores/favoritesStore'
 
 const router = useRouter()
+const favoritesStore = useFavoritesStore()
 
 const weatherList = ref(mockCities)
 const searchQuery = ref('')
 const selectedCityId = ref(null)
-const favoriteCityIds = ref(new Set())
-
-onMounted(() => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) ?? '[]')
-    favoriteCityIds.value = new Set(saved)
-  } catch {
-    favoriteCityIds.value = new Set()
-  }
-})
 
 const filteredWeatherList = computed(() => {
   const keyword = searchQuery.value.trim()
@@ -39,14 +29,7 @@ const goToDetail = (city) => {
 }
 
 const toggleFavorite = (city) => {
-  const next = new Set(favoriteCityIds.value)
-  if (next.has(city.id)) {
-    next.delete(city.id)
-  } else {
-    next.add(city.id)
-  }
-  favoriteCityIds.value = next
-  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...next]))
+  favoritesStore.toggleFavorite(city.id)
 }
 </script>
 
@@ -68,7 +51,7 @@ const toggleFavorite = (city) => {
           :key="city.id"
           :city="city"
           :is-selected="city.id === selectedCityId"
-          :is-favorite="favoriteCityIds.has(city.id)"
+          :is-favorite="favoritesStore.isFavorite(city.id)"
           @select-card="selectCity"
           @click-detail="goToDetail"
           @toggle-favorite="toggleFavorite"

@@ -1,40 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { mockCities } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
-
-const STORAGE_KEY = 'weather-favorite-city-ids'
+import { useFavoritesStore } from '../stores/favoritesStore'
 
 const router = useRouter()
-const favoriteCityIds = ref(new Set())
-const favoriteCities = ref([])
+const favoritesStore = useFavoritesStore()
 
-const syncFavorites = () => {
-  favoriteCities.value = mockCities.filter((city) => favoriteCityIds.value.has(city.id))
-}
-
-onMounted(() => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
-    favoriteCityIds.value = new Set(saved)
-  } catch {
-    favoriteCityIds.value = new Set()
-  }
-  syncFavorites()
-})
+const favoriteCities = computed(() =>
+  mockCities.filter((city) => favoritesStore.isFavorite(city.id)),
+)
 
 const toggleFavorite = (city) => {
-  const next = new Set(favoriteCityIds.value)
-  if (next.has(city.id)) {
-    next.delete(city.id)
-  } else {
-    next.add(city.id)
-  }
-  favoriteCityIds.value = next
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]))
-  syncFavorites()
+  favoritesStore.toggleFavorite(city.id)
 }
 
 const goToDetail = (city) => {

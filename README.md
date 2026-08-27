@@ -143,3 +143,14 @@ src/
 6. 상기 정의된 view 이외에 본인의 추가 view 를 작성하고 Routing 한다.
 
 - `WeatherFavoritesView.vue` (`/weather/favorites`): localStorage에 저장된 즐겨찾기 도시만 모아 보여주는 페이지
+
+## 과제 5 - Weather Store Pinia
+▪ 날씨 단위를 세팅하는 stores/configStore.js 작성
+▪ 과제 요구사항
+1. UnitToggler.vue : 대시보드 상단에 배치되어 단위 설정을 변경하는 UI 버튼과 영역
+2. Navigation Bar 옆에 UnitToggler.vue 배치
+3. 메인과 상세 날씨에 단위 설정 변경 적용
+(참고) 메인/상세 날씨에 단위 설정을 변경을 적용할 경우 유사한 코드가 중복됨 →
+Composable 로 해결 가능함 (범위 제외)
+4. 본인만의 추가 Store를 작성하고 활용하거나, configStore에서 state, getter, action을 추가
+한다

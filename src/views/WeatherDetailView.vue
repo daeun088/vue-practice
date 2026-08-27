@@ -3,9 +3,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findCityById, getOutfitCategory, WEATHER_ICONS } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
+import { useConfigStore } from '../stores/configStore'
 
 const route = useRoute()
 const router = useRouter()
+const configStore = useConfigStore()
 
 const city = ref(null)
 
@@ -14,6 +16,7 @@ onMounted(() => {
 })
 
 const outfit = computed(() => (city.value ? getOutfitCategory(city.value.temp) : null))
+const displayTemp = computed(() => (city.value ? configStore.convertTemp(city.value.temp) : null))
 
 const goHome = () => {
   router.push('/')
@@ -26,7 +29,7 @@ const goHome = () => {
       <header class="detail-header">
         <div class="icon">{{ WEATHER_ICONS[city.status] ?? '🌈' }}</div>
         <h2>{{ city.name }}</h2>
-        <p class="status">{{ city.status }} · {{ city.temp }}°C</p>
+        <p class="status">{{ city.status }} · {{ displayTemp }}{{ configStore.unitSymbol }}</p>
       </header>
 
       <BaseDashboardCard title="상세 관측 정보">

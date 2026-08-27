@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { getOutfitCategory, WEATHER_ICONS } from './weatherData'
+import { useConfigStore } from '../../stores/configStore'
 
 const props = defineProps({
   city: { type: Object, required: true },
@@ -10,7 +11,10 @@ const props = defineProps({
 
 defineEmits(['select-card', 'click-detail', 'toggle-favorite'])
 
+const configStore = useConfigStore()
+
 const outfit = computed(() => getOutfitCategory(props.city.temp))
+const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
 </script>
 
 <template>
@@ -28,7 +32,7 @@ const outfit = computed(() => getOutfitCategory(props.city.temp))
     </button>
     <div class="card-icon">{{ WEATHER_ICONS[city.status] ?? '🌈' }}</div>
     <h3 class="city-name">{{ city.name }}</h3>
-    <p class="temp">{{ city.temp }}<span class="deg">°C</span></p>
+    <p class="temp">{{ displayTemp }}<span class="deg">{{ configStore.unitSymbol }}</span></p>
     <p class="status-text">{{ city.status }}</p>
 
     <p class="badge">{{ outfit.emoji }} {{ outfit.label }}</p>

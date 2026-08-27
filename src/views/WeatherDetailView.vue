@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findCityMetaById } from '../components/exercise/cities'
-import { getOutfitCategory } from '../components/exercise/weatherData'
+import { getOutfitCategory, getAccessories } from '../components/exercise/weatherData'
 import { fetchCurrentWeather, fetchForecast } from '../services/weatherApi'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import { useConfigStore } from '../stores/configStore'
@@ -19,6 +19,7 @@ const isLoading = ref(true)
 const loadError = ref('')
 
 const outfit = computed(() => (city.value ? getOutfitCategory(city.value.temp) : null))
+const accessories = computed(() => (city.value ? getAccessories(city.value) : []))
 const displayTemp = computed(() => (city.value ? configStore.convertTemp(city.value.temp) : null))
 const displayFeelsLike = computed(() =>
   city.value ? configStore.convertTemp(city.value.feelsLike) : null,
@@ -81,6 +82,11 @@ onMounted(async () => {
             <strong>{{ outfit.emoji }} {{ outfit.label }}</strong>
           </li>
         </ul>
+        <p v-if="accessories.length > 0" class="accessory-row">
+          <span v-for="accessory in accessories" :key="accessory.label" class="accessory-badge">
+            {{ accessory.emoji }} {{ accessory.label }}
+          </span>
+        </p>
       </BaseDashboardCard>
 
       <BaseDashboardCard title="5일 예보">
@@ -148,6 +154,19 @@ onMounted(async () => {
 
 .detail-list li:last-child {
   border-bottom: none;
+}
+
+.accessory-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.accessory-badge {
+  font-size: 0.85rem;
+  background: var(--color-background-mute);
+  border-radius: 999px;
+  padding: 4px 12px;
 }
 
 .forecast-list {

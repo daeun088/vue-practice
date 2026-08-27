@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { getOutfitCategory } from './weatherData'
+import { getOutfitCategory, getAccessories } from './weatherData'
 import { useConfigStore } from '../../stores/configStore'
 
 const props = defineProps({
@@ -15,6 +15,7 @@ const configStore = useConfigStore()
 
 const outfit = computed(() => getOutfitCategory(props.city.temp))
 const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
+const accessories = computed(() => getAccessories(props.city))
 </script>
 
 <template>
@@ -37,6 +38,9 @@ const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
     <p class="status-text">{{ city.status }}</p>
 
     <p class="badge">{{ outfit.emoji }} {{ outfit.label }}</p>
+    <p v-for="accessory in accessories" :key="accessory.label" class="badge badge-accessory">
+      {{ accessory.emoji }} {{ accessory.label }}
+    </p>
 
     <button class="detail-btn" @click.stop="$emit('click-detail', city)">상세보기</button>
   </div>
@@ -127,6 +131,10 @@ const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
   background: rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   padding: 4px 10px;
+  margin-bottom: 6px;
+}
+
+.badge:last-of-type {
   margin-bottom: 12px;
 }
 

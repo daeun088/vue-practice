@@ -16,6 +16,7 @@ function mapCurrentWeather(cityMeta, data) {
     temp: data.main.temp,
     feelsLike: data.main.feels_like,
     status: data.weather[0].description,
+    conditionMain: data.weather[0].main,
     iconUrl: iconUrl(data.weather[0].icon),
     humidity: data.main.humidity,
     windSpeed: data.wind.speed,

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findCityMetaById } from '../components/exercise/cities'
-import { getOutfitCategory } from '../components/exercise/weatherData'
+import { getOutfitCategory, getAccessories } from '../components/exercise/weatherData'
 import { fetchCurrentWeather, fetchForecast } from '../services/weatherApi'
 import { useConfigStore } from '../stores/configStore'
 
@@ -18,6 +18,7 @@ const isLoading = ref(true)
 const loadError = ref('')
 
 const outfit = computed(() => (city.value ? getOutfitCategory(city.value.temp) : null))
+const accessories = computed(() => (city.value ? getAccessories(city.value) : []))
 const dailyForecast = computed(() =>
   forecast.value.filter((entry) => entry.dateTime.includes('12:00:00')),
 )
@@ -91,6 +92,19 @@ onMounted(async () => {
           <v-list-item-title>추천 코디</v-list-item-title>
           <template #append>
             <v-chip size="small">{{ outfit.emoji }} {{ outfit.label }}</v-chip>
+          </template>
+        </v-list-item>
+        <v-list-item v-if="accessories.length > 0">
+          <v-list-item-title>준비물</v-list-item-title>
+          <template #append>
+            <v-chip
+              v-for="accessory in accessories"
+              :key="accessory.label"
+              size="small"
+              class="ml-1"
+            >
+              {{ accessory.emoji }} {{ accessory.label }}
+            </v-chip>
           </template>
         </v-list-item>
       </v-list>

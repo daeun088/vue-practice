@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { cities } from '../components/exercise/cities'
 import { fetchCurrentWeatherList } from '../services/weatherApi'
 import { fetchHolidays } from '../services/holidayApi'
+import { OUTFIT_GUIDE } from '../components/exercise/weatherData'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import SearchBar from '../components/exercise/SearchBar.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
@@ -112,6 +113,16 @@ onMounted(async () => {
       </div>
       <p class="empty-msg" v-else>'{{ searchQuery }}'와 일치하는 도시가 없습니다 🥲</p>
     </BaseDashboardCard>
+
+    <BaseDashboardCard title="코디 가이드">
+      <ul class="guide-list">
+        <li v-for="item in OUTFIT_GUIDE" :key="item.key">
+          <span class="guide-emoji">{{ item.emoji }}</span>
+          <span class="guide-label">{{ item.label }}</span>
+          <span class="guide-range">{{ item.range }}</span>
+        </li>
+      </ul>
+    </BaseDashboardCard>
   </div>
 </template>
 
@@ -170,5 +181,37 @@ onMounted(async () => {
 
 .holiday-list li:last-child {
   border-bottom: none;
+}
+
+.guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.guide-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.guide-emoji {
+  font-size: 1.3rem;
+}
+
+.guide-label {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.guide-range {
+  font-size: 0.8rem;
+  opacity: 0.6;
 }
 </style>

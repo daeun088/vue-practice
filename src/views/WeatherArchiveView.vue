@@ -1,30 +1,19 @@
 <script setup>
+import { ref, computed } from 'vue'
+import WeatherMockup from '../components/weather/WeatherMockup.vue'
+import WeatherComposition from '../components/weather/WeatherComposition.vue'
+import WeatherParent from '../components/weather/WeatherParent.vue'
+import WeatherVuetifyView from './WeatherVuetifyView.vue'
+
 const records = [
-  {
-    to: '/weather-mockup',
-    label: 'Day1',
-    title: 'Weather Mockup',
-    desc: 'v-for / v-if / 이벤트 수식어로 처음 만든 날씨 카드',
-  },
-  {
-    to: '/weather-composition',
-    label: 'Day2',
-    title: 'Weather Composition',
-    desc: 'computed / watch / watchEffect로 검색·정렬 추가',
-  },
-  {
-    to: '/weather-dashboard',
-    label: 'Day3',
-    title: 'Weather Dashboard',
-    desc: '같은 화면을 기능 변경 없이 컴포넌트 단위로 분리',
-  },
-  {
-    to: '/weather-vuetify',
-    label: 'Vuetify',
-    title: 'Weather Vuetify',
-    desc: '외부 UI 라이브러리(Vuetify)를 부분 적용해본 버전',
-  },
+  { key: 'day1', label: 'Day1', title: 'Weather Mockup', component: WeatherMockup },
+  { key: 'day2', label: 'Day2', title: 'Weather Composition', component: WeatherComposition },
+  { key: 'day3', label: 'Day3', title: 'Weather Dashboard', component: WeatherParent },
+  { key: 'vuetify', label: 'Vuetify', title: 'Weather Vuetify', component: WeatherVuetifyView },
 ]
+
+const selectedKey = ref(records[0].key)
+const selectedRecord = computed(() => records.find((record) => record.key === selectedKey.value))
 </script>
 
 <template>
@@ -35,25 +24,30 @@ const records = [
     </header>
 
     <div class="layout-grid">
-      <ul class="record-info-list">
-        <li v-for="record in records" :key="record.to">
-          <h3>{{ record.label }} · {{ record.title }}</h3>
-          <p>{{ record.desc }}</p>
-        </li>
-      </ul>
-
       <nav class="record-menu">
-        <RouterLink v-for="record in records" :key="record.to" :to="record.to" class="menu-item">
+        <button
+          v-for="record in records"
+          :key="record.key"
+          type="button"
+          class="menu-item"
+          :class="{ active: record.key === selectedKey }"
+          @click="selectedKey = record.key"
+        >
           {{ record.label }}
-        </RouterLink>
+        </button>
       </nav>
+
+      <div class="record-content">
+        <p class="record-content-title">{{ selectedRecord.title }}</p>
+        <component :is="selectedRecord.component" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .archive-page {
-  max-width: 900px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -76,35 +70,9 @@ const records = [
 
 .layout-grid {
   display: grid;
-  grid-template-columns: 1fr 160px;
+  grid-template-columns: 160px 1fr;
   gap: 20px;
   align-items: start;
-}
-
-.record-info-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.record-info-list li {
-  padding: 16px 20px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background: var(--color-background-soft);
-}
-
-.record-info-list h3 {
-  font-size: 1.05rem;
-  margin-bottom: 4px;
-}
-
-.record-info-list p {
-  font-size: 0.85rem;
-  opacity: 0.85;
 }
 
 .record-menu {
@@ -121,12 +89,14 @@ const records = [
 
 .menu-item {
   padding: 8px 14px;
+  border: none;
   border-radius: 999px;
+  background: transparent;
   color: var(--color-text);
-  text-decoration: none;
   font-size: 0.9rem;
   opacity: 0.85;
   text-align: center;
+  cursor: pointer;
   transition:
     background 0.15s ease,
     opacity 0.15s ease;
@@ -137,11 +107,21 @@ const records = [
   opacity: 1;
 }
 
-.menu-item.router-link-active {
+.menu-item.active {
   background: linear-gradient(120deg, #ff8a5c, #ff5e8e);
   color: #fff;
   opacity: 1;
   font-weight: 600;
+}
+
+.record-content {
+  min-width: 0;
+}
+
+.record-content-title {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 620px) {

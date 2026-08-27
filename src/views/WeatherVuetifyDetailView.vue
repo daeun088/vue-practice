@@ -28,7 +28,7 @@ const formatForecastDate = (dateTime) => {
 }
 
 const goHome = () => {
-  router.push('/weather-vuetify')
+  router.back()
 }
 
 onMounted(async () => {

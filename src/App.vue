@@ -1,11 +1,12 @@
 <script setup>
 import UnitToggler from './components/exercise/UnitToggler.vue'
+import logo from './assets/logo.png'
 </script>
 
 <template>
   <header class="top-bar">
     <RouterLink to="/" class="brand">
-      <span class="brand-mark">🧥</span>
+      <img :src="logo" alt="오늘뭐입지" class="brand-mark" />
       <span class="brand-name">오늘뭐입지</span>
     </RouterLink>
 
@@ -45,7 +46,9 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
 }
 
 .brand-mark {
-  font-size: 1.4rem;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .brand-name {

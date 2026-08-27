@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { mockCities } from '../components/exercise/weatherData'
+import { cities } from '../components/exercise/cities'
+import { fetchCurrentWeatherList } from '../services/weatherApi'
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
 import { useFavoritesStore } from '../stores/favoritesStore'
@@ -9,8 +10,12 @@ import { useFavoritesStore } from '../stores/favoritesStore'
 const router = useRouter()
 const favoritesStore = useFavoritesStore()
 
+const weatherList = ref([])
+const isLoading = ref(true)
+const loadError = ref('')
+
 const favoriteCities = computed(() =>
-  mockCities.filter((city) => favoritesStore.isFavorite(city.id)),
+  weatherList.value.filter((city) => favoritesStore.isFavorite(city.id)),
 )
 
 const toggleFavorite = (city) => {
@@ -20,6 +25,20 @@ const toggleFavorite = (city) => {
 const goToDetail = (city) => {
   router.push('/weather/' + city.id)
 }
+
+onMounted(async () => {
+  try {
+    weatherList.value = await fetchCurrentWeatherList(cities)
+  } catch (err) {
+    console.error(err)
+    loadError.value =
+      err.response?.status === 401
+        ? 'API 키가 유효하지 않습니다. .env 파일을 확인해주세요.'
+        : '날씨 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>
 
 <template>
@@ -30,7 +49,9 @@ const goToDetail = (city) => {
     </header>
 
     <BaseDashboardCard title="즐겨찾기 목록">
-      <div class="weather-cards" v-if="favoriteCities.length > 0">
+      <p v-if="isLoading" class="empty-msg">날씨 정보를 불러오는 중입니다...</p>
+      <p v-else-if="loadError" class="empty-msg">{{ loadError }}</p>
+      <div v-else-if="favoriteCities.length > 0" class="weather-cards">
         <WeatherCard
           v-for="city in favoriteCities"
           :key="city.id"

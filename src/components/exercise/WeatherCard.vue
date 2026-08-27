@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { getOutfitCategory, WEATHER_ICONS } from './weatherData'
+import { getOutfitCategory } from './weatherData'
 import { useConfigStore } from '../../stores/configStore'
 
 const props = defineProps({
@@ -30,7 +30,8 @@ const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
     >
       {{ isFavorite ? '⭐' : '☆' }}
     </button>
-    <div class="card-icon">{{ WEATHER_ICONS[city.status] ?? '🌈' }}</div>
+    <img v-if="city.iconUrl" class="card-icon" :src="city.iconUrl" :alt="city.status" />
+    <div v-else class="card-icon">🌈</div>
     <h3 class="city-name">{{ city.name }}</h3>
     <p class="temp">{{ displayTemp }}<span class="deg">{{ configStore.unitSymbol }}</span></p>
     <p class="status-text">{{ city.status }}</p>
@@ -92,6 +93,8 @@ const displayTemp = computed(() => configStore.convertTemp(props.city.temp))
 }
 
 .card-icon {
+  width: 56px;
+  height: 56px;
   font-size: 2rem;
   margin-bottom: 6px;
 }

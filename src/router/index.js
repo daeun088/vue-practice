@@ -5,10 +5,26 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/weather',
+      name: 'weather-home',
+      component: () => import('../views/WeatherHomeView.vue'),
     },
     {
-      path: '/weather',
+      path: '/weather/about',
+      name: 'weather-about',
+      component: () => import('../views/WeatherAboutView.vue'),
+    },
+    {
+      path: '/weather/favorites',
+      name: 'weather-favorites',
+      component: () => import('../views/WeatherFavoritesView.vue'),
+    },
+    {
+      path: '/weather/:cityId',
+      name: 'weather-detail',
+      component: () => import('../views/WeatherDetailView.vue'),
+    },
+    {
+      path: '/weather-mockup',
       name: 'weather',
       component: () => import('../views/WeatherView.vue'),
     },
@@ -21,6 +37,11 @@ const router = createRouter({
       path: '/weather-dashboard',
       name: 'weather-dashboard',
       component: () => import('../views/WeatherDashboardView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
     },
   ],
 })

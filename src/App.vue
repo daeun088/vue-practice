@@ -2,7 +2,10 @@
 
 <template>
   <nav style="padding: 0 20px">
-    <RouterLink to="/weather">Weather Mockup</RouterLink>
+    <RouterLink to="/">홈</RouterLink>
+    <RouterLink to="/weather/favorites">즐겨찾기</RouterLink>
+    <RouterLink to="/weather/about">소개</RouterLink>
+    <RouterLink to="/weather-mockup">Weather Mockup</RouterLink>
     <RouterLink to="/weather-composition">Weather Composition</RouterLink>
     <RouterLink to="/weather-dashboard">Weather Dashboard</RouterLink>
   </nav>
